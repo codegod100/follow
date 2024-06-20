@@ -3,6 +3,7 @@
   "packages": {
     "specifiers": {
       "jsr:@fedify/fedify@^0.10.0": "jsr:@fedify/fedify@0.10.0",
+      "jsr:@hongminhee/x-forwarded-fetch@^0.2.0": "jsr:@hongminhee/x-forwarded-fetch@0.2.0",
       "jsr:@logtape/logtape@^0.4.0": "jsr:@logtape/logtape@0.4.0",
       "jsr:@std/bytes@^1.0.0": "jsr:@std/bytes@1.0.0",
       "jsr:@std/encoding@^0.224.3": "jsr:@std/encoding@0.224.3",
@@ -38,6 +39,9 @@
           "npm:uri-template-router@^0.0.16",
           "npm:url-template@^3.1.1"
         ]
+      },
+      "@hongminhee/x-forwarded-fetch@0.2.0": {
+        "integrity": "8a347e061974e07b480e9461c7d84047e12e92c462fe7679a6f0f59b5c5f48d5"
       },
       "@logtape/logtape@0.4.0": {
         "integrity": "02bd3f7e408b34834e30795656c343637f62be529728b382fcbd51a00b4b6d7f"
@@ -257,6 +261,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@fedify/fedify@^0.10.0",
+      "jsr:@hongminhee/x-forwarded-fetch@^0.2.0",
       "jsr:@logtape/logtape@^0.4.0"
     ]
   }

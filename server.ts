@@ -1,5 +1,7 @@
-import { Accept, createFederation, MemoryKvStore, Person, exportJwk, generateCryptoKeyPair, importJwk, Context, Follow, Recipient, InProcessMessageQueue, Create, Note, PUBLIC_COLLECTION } from "@fedify/fedify";
+import { Accept, Activity, createFederation, MemoryKvStore, Person, exportJwk, generateCryptoKeyPair, importJwk, Context, Follow, Recipient, InProcessMessageQueue, Create, Note, PUBLIC_COLLECTION } from "@fedify/fedify";
 import { configure, getConsoleSink } from "@logtape/logtape";
+import { behindProxy } from "@hongminhee/x-forwarded-fetch";
+
 
 await configure({
     sinks: { console: getConsoleSink() },
@@ -34,7 +36,7 @@ async function sendNote(
                 to: PUBLIC_COLLECTION,
             }),
         }),
-        { preferSharedInbox: true },
+        { preferSharedInbox: true }
     );
 }
 
@@ -91,6 +93,7 @@ federation.setActorDispatcher("/users/{handle}", async (ctx, handle) => {
     });
 federation.setInboxListeners("/users/{handle}/inbox", "/inbox")
     .on(Follow, async (ctx, follow) => {
+        console.debug("got follow")
         if (follow.id == null || follow.actorId == null || follow.objectId == null) {
             return;
         }
@@ -104,10 +107,12 @@ federation.setInboxListeners("/users/{handle}/inbox", "/inbox")
         );
         await kv.set(["followers", follow.id.href], follow.actorId.href);
         console.debug(follower);
-    });
+    }).on(Activity, (ctx, activity) => {
+        console.log({ activity })
+    })
 
-Deno.serve(async (request) => {
-    const ctx = await federation.createContext(request);
+Deno.serve(behindProxy(async request => {
+    const ctx = federation.createContext(request);
 
     const url = new URL(request.url);
     // The home page:
@@ -125,11 +130,11 @@ Deno.serve(async (request) => {
         );
     }
     if (url.pathname === "/send") {
-        const recip = new Person({ id: new URL("https://federate.social/users/v") })
+        const recip = new Person({ id: new URL("https://federate.social/@v") })
         await sendNote(ctx, "me", recip)
         return Response.json({ recip })
     }
 
     // The federation-related requests are handled by the Federation object:
     return await federation.fetch(request, { contextData: undefined });
-});
+}))
