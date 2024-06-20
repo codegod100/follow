@@ -12,7 +12,7 @@ await configure({
 });
 
 const federation = createFederation<void>({
-    queue: new InProcessMessageQueue(),
+    // queue: new InProcessMessageQueue(),
     kv: new MemoryKvStore(),
 });
 
@@ -25,6 +25,7 @@ async function sendNote(
     senderHandle: string,
     recipient: Recipient,
 ) {
+    console.log({ recipient })
     await ctx.sendActivity(
         { handle: senderHandle },
         recipient,
@@ -36,7 +37,6 @@ async function sendNote(
                 to: PUBLIC_COLLECTION,
             }),
         }),
-        { preferSharedInbox: true }
     );
 }
 
@@ -100,6 +100,7 @@ federation.setInboxListeners("/users/{handle}/inbox", "/inbox")
         const parsed = ctx.parseUri(follow.objectId);
         if (parsed?.type !== "actor" || parsed.handle !== "me") return;
         const follower = await follow.getActor(ctx);
+        await sendNote(ctx, "me", follower as Recipient)
         await ctx.sendActivity(
             { handle: parsed.handle },
             follower,
@@ -130,7 +131,7 @@ Deno.serve(behindProxy(async request => {
         );
     }
     if (url.pathname === "/send") {
-        const recip = new Person({ id: new URL("https://federate.social/@v") })
+        const recip = new Actor({ id: new URL("acct:me@follow-78.deno.dev") })
         await sendNote(ctx, "me", recip)
         return Response.json({ recip })
     }
