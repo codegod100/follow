@@ -25,19 +25,21 @@ async function sendNote(
     senderHandle: string,
     recipient: Recipient,
 ) {
-    console.log({ recipient })
+    const creation = new Create({
+        actor: ctx.getActorUri(senderHandle),
+        to: recipient.id,
+        object: new Note({
+            attribution: ctx.getActorUri(senderHandle),
+            to: recipient.id,
+            contents: ["WAZZZUP"]
+        }),
+    })
+    console.log({ creation })
+
     await ctx.sendActivity(
         { handle: senderHandle },
         recipient,
-        new Create({
-            actor: ctx.getActorUri(senderHandle),
-            to: PUBLIC_COLLECTION,
-            object: new Note({
-                attribution: ctx.getActorUri(senderHandle),
-                to: PUBLIC_COLLECTION,
-                content: "WAZZZUP"
-            }),
-        }),
+        creation
     );
 }
 
