@@ -21,6 +21,7 @@ federation.setActorDispatcher("/users/{handle}", async (ctx, handle) => {
         summary: "This is me!",  // Bio
         preferredUsername: handle,  // Bare handle
         url: new URL("/", ctx.url),
+        inbox: ctx.getInboxUri(handle),  // Inbox URI
     });
 });
 
