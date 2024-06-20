@@ -35,6 +35,7 @@ async function sendNote(
             object: new Note({
                 attribution: ctx.getActorUri(senderHandle),
                 to: PUBLIC_COLLECTION,
+                content: "WAZZZUP"
             }),
         }),
     );
@@ -131,7 +132,7 @@ Deno.serve(behindProxy(async request => {
         );
     }
     if (url.pathname === "/send") {
-        const recip = new Actor({ id: new URL("acct:me@follow-78.deno.dev") })
+        const recip = new Person({ id: new URL("https://follow-78.deno.dev/users/me") })
         await sendNote(ctx, "me", recip)
         return Response.json({ recip })
     }
